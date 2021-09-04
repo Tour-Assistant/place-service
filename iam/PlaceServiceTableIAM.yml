@@ -1,0 +1,20 @@
+PlaceServiceTableIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:PutItem
+    - dynamodb:Scan
+    - dynamodb:GetItem
+    - dynamodb:UpdateItem
+    - dynamodb:DeleteItem
+    - dynamodb:Query
+    - dynamodb:BatchWriteItem
+  Resource:
+    - ${self:custom.PlaceServiceTable.arn}
+    - !Join [
+        "/",
+        [
+          "${self:custom.PlaceServiceTable.arn}",
+          "index",
+          "eventStatus_startAt_index",
+        ],
+      ]

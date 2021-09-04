@@ -1,0 +1,67 @@
+# NOTE: update this with your service name
+service: place-service
+
+# Create an optimized package for our functions
+package:
+  individually: true
+
+plugins:
+  - serverless-bundle # Package our functions with Webpack
+  - serverless-offline
+  - serverless-dotenv-plugin # Load .env as environment variables
+  - serverless-pseudo-parameters
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: ${self:custom.Region}
+  environment:
+    PLACE_SERVICE_TABLE_NAME: ${self:custom.PlaceServiceTable.name}
+    REGION: ${self:custom.Region}
+  iamRoleStatements:
+    - ${file(iam/PlaceServiceTableIAM.yml):PlaceServiceTableIAM}
+
+functions:
+  createPlace:
+    handler: src/handlers/createPlace.handler
+    events:
+      - http:
+          method: POST
+          path: /place
+          cors: true
+          # authorizer: ${self:custom.authorizer}
+  getPlaces:
+    handler: src/handlers/getPlaces.handler
+    events:
+      - http:
+          path: places
+          method: get
+          cors: true
+          # authorizer: ${self:custom.authorizer}
+  updatePlace:
+    handler: src/handlers/updatePlace.handler
+    events:
+      - http:
+          path: place/{id}
+          method: patch
+          cors: true
+          # authorizer: ${self:custom.authorizer}
+  deletePlace:
+    handler: src/handlers/deletePlace.handler
+    events:
+      - http:
+          path: place/{id}
+          method: delete
+          cors: true
+          # authorizer: ${self:custom.authorizer}
+resources:
+  Resources:
+    PlaceServiceTable: ${file(resources/PlaceServiceTable.yml):PlaceServiceTable}
+
+custom:
+  authorizer: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:tour-assistant-auth-service-${self:provider.stage}-auth
+  Region: ap-south-1
+  PlaceServiceTable:
+    name: !Ref PlaceServiceTable
+    arn: !GetAtt PlaceServiceTable.Arn

@@ -30,7 +30,7 @@ functions:
           method: POST
           path: /place
           cors: true
-          # authorizer: ${self:custom.authorizer}
+          authorizer: ${self:custom.authorizer}
   getPlaces:
     handler: src/handlers/getPlaces.handler
     events:
@@ -38,7 +38,7 @@ functions:
           path: places
           method: get
           cors: true
-          # authorizer: ${self:custom.authorizer}
+          authorizer: ${self:custom.authorizer}
   updatePlace:
     handler: src/handlers/updatePlace.handler
     events:
@@ -46,7 +46,7 @@ functions:
           path: place/{id}
           method: patch
           cors: true
-          # authorizer: ${self:custom.authorizer}
+          authorizer: ${self:custom.authorizer}
   deletePlace:
     handler: src/handlers/deletePlace.handler
     events:
@@ -54,7 +54,7 @@ functions:
           path: place/{id}
           method: delete
           cors: true
-          # authorizer: ${self:custom.authorizer}
+          authorizer: ${self:custom.authorizer}
 resources:
   Resources:
     PlaceServiceTable: ${file(resources/PlaceServiceTable.yml):PlaceServiceTable}

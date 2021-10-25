@@ -10,11 +10,13 @@ plugins:
   - serverless-offline
   - serverless-dotenv-plugin # Load .env as environment variables
   - serverless-pseudo-parameters
+  - serverless-domain-manager
+  - serverless-export-env
 
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: dev
+  stage: ${opt:stage, 'dev'}
   region: ${self:custom.Region}
   environment:
     PLACE_SERVICE_TABLE_NAME: ${self:custom.PlaceServiceTable.name}
@@ -65,3 +67,13 @@ custom:
   PlaceServiceTable:
     name: !Ref PlaceServiceTable
     arn: !GetAtt PlaceServiceTable.Arn
+  domain:
+    test: place-api-test.my-tour-assistant.com
+    dev: place-api-dev.my-tour-assistant.com
+    prod: place-api.my-tour-assistant.com
+  customDomain:
+    domainName: ${self:custom.domain.${opt:stage, 'dev'}}
+    basePath: 'v1'
+    stage: ${self:provider.stage}
+    certificateName: my-tour-assistant.com
+    createRoute53Record: true
